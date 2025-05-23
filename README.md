@@ -16,7 +16,7 @@ This project implements a distributed container orchestration system using VXLAN
 
 ## Architecture Overview
 
-![cluster view](https://raw.githubusercontent.com/Raihan-009/vxlan-with-ipam/2314a85293e77e23eeef667a4fbc637238a2f9c4/Assets/vxlan-cluster.svg)
+![cluster view](https://raw.githubusercontent.com/Raihan-009/vxlan-with-ipam/f3a90ce0624e6a6cc7524c8653b00ae257a2ba82/Assets/vxlan-cluster.svg)
 
 The system consists of three main components:
 
@@ -45,7 +45,7 @@ The system consists of three main components:
 
 ## Network Flow & Communication
 
-![container lifecycle](https://raw.githubusercontent.com/Raihan-009/vxlan-with-ipam/2314a85293e77e23eeef667a4fbc637238a2f9c4/Assets/container-creation.svg)
+![container lifecycle](https://raw.githubusercontent.com/Raihan-009/vxlan-with-ipam/f3a90ce0624e6a6cc7524c8653b00ae257a2ba82/Assets/container-creation.svg)
 
 ### Container Creation Workflow
 
@@ -70,7 +70,7 @@ The IPAM service uses Redis data structures for efficient IP management:
 
 ## Technical Deep Dive
 
-![protocol details](https://raw.githubusercontent.com/Raihan-009/vxlan-with-ipam/2314a85293e77e23eeef667a4fbc637238a2f9c4/Assets/vxlan-stack.svg)
+![protocol details](https://raw.githubusercontent.com/Raihan-009/vxlan-with-ipam/f3a90ce0624e6a6cc7524c8653b00ae257a2ba82/Assets/vxlan-stack.svg)
 
 ### VXLAN Encapsulation Process
 
