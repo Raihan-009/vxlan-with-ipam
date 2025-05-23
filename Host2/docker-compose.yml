@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  container-service:
+    build: .
+    container_name: vxlan-container-service
+    ports:
+      - "8001:8001"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    network_mode: host
+    restart: unless-stopped
+    privileged: true
