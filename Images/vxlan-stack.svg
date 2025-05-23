@@ -1,0 +1,279 @@
+<svg viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="900" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="600" y="30" text-anchor="middle" font-size="24" font-weight="bold" fill="#2c3e50">
+    VXLAN Network Stack and Protocol Details
+  </text>
+  
+  <!-- Host 1 Network Stack -->
+  <g id="host1-stack">
+    <text x="200" y="80" text-anchor="middle" font-size="16" font-weight="bold" fill="#e74c3c">
+      Host 1 (10.0.1.142) Network Stack
+    </text>
+    
+    <!-- Application Layer -->
+    <rect x="50" y="100" width="300" height="40" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="5"/>
+    <text x="200" y="125" text-anchor="middle" font-size="12" fill="white">
+      Application Layer - Container Service (FastAPI:8001)
+    </text>
+    
+    <!-- Docker Layer -->
+    <rect x="50" y="150" width="300" height="40" fill="#2ecc71" stroke="#27ae60" stroke-width="2" rx="5"/>
+    <text x="200" y="175" text-anchor="middle" font-size="12" fill="white">
+      Docker Engine - Container Management
+    </text>
+    
+    <!-- Container Network -->
+    <rect x="50" y="200" width="300" height="40" fill="#f39c12" stroke="#e67e22" stroke-width="2" rx="5"/>
+    <text x="200" y="225" text-anchor="middle" font-size="12" fill="white">
+      Container Network (172.20.0.0/16)
+    </text>
+    
+    <!-- Docker Bridge -->
+    <rect x="50" y="250" width="300" height="40" fill="#9b59b6" stroke="#8e44ad" stroke-width="2" rx="5"/>
+    <text x="200" y="275" text-anchor="middle" font-size="12" fill="white">
+      Docker Bridge (br-xxxxx)
+    </text>
+    
+    <!-- VXLAN Interface -->
+    <rect x="50" y="300" width="300" height="40" fill="#e67e22" stroke="#d35400" stroke-width="2" rx="5"/>
+    <text x="200" y="325" text-anchor="middle" font-size="12" fill="white">
+      VXLAN Interface (vxlan0) - VNI 100
+    </text>
+    
+    <!-- Physical Interface -->
+    <rect x="50" y="350" width="300" height="40" fill="#34495e" stroke="#2c3e50" stroke-width="2" rx="5"/>
+    <text x="200" y="375" text-anchor="middle" font-size="12" fill="white">
+      Physical Interface (eth0) - 10.0.1.142
+    </text>
+    
+    <!-- Sample Containers -->
+    <rect x="70" y="420" width="80" height="60" fill="#1abc9c" stroke="#16a085" stroke-width="1" rx="3"/>
+    <text x="110" y="440" text-anchor="middle" font-size="10" fill="white">nginx1</text>
+    <text x="110" y="455" text-anchor="middle" font-size="9" fill="white">172.20.0.10</text>
+    <text x="110" y="470" text-anchor="middle" font-size="8" fill="white">Port 80</text>
+    
+    <rect x="160" y="420" width="80" height="60" fill="#1abc9c" stroke="#16a085" stroke-width="1" rx="3"/>
+    <text x="200" y="440" text-anchor="middle" font-size="10" fill="white">web1</text>
+    <text x="200" y="455" text-anchor="middle" font-size="9" fill="white">172.20.0.11</text>
+    <text x="200" y="470" text-anchor="middle" font-size="8" fill="white">Port 80</text>
+    
+    <rect x="250" y="420" width="80" height="60" fill="#1abc9c" stroke="#16a085" stroke-width="1" rx="3"/>
+    <text x="290" y="440" text-anchor="middle" font-size="10" fill="white">app1</text>
+    <text x="290" y="455" text-anchor="middle" font-size="9" fill="white">172.20.0.12</text>
+    <text x="290" y="470" text-anchor="middle" font-size="8" fill="white">Port 3000</text>
+  </g>
+  
+  <!-- Host 2 Network Stack -->
+  <g id="host2-stack">
+    <text x="600" y="80" text-anchor="middle" font-size="16" font-weight="bold" fill="#e74c3c">
+      Host 2 (10.0.1.6) Network Stack
+    </text>
+    
+    <!-- Application Layer -->
+    <rect x="450" y="100" width="300" height="40" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="5"/>
+    <text x="600" y="125" text-anchor="middle" font-size="12" fill="white">
+      Application Layer - Container Service (FastAPI:8001)
+    </text>
+    
+    <!-- Docker Layer -->
+    <rect x="450" y="150" width="300" height="40" fill="#2ecc71" stroke="#27ae60" stroke-width="2" rx="5"/>
+    <text x="600" y="175" text-anchor="middle" font-size="12" fill="white">
+      Docker Engine - Container Management
+    </text>
+    
+    <!-- Container Network -->
+    <rect x="450" y="200" width="300" height="40" fill="#f39c12" stroke="#e67e22" stroke-width="2" rx="5"/>
+    <text x="600" y="225" text-anchor="middle" font-size="12" fill="white">
+      Container Network (172.20.0.0/16)
+    </text>
+    
+    <!-- Docker Bridge -->
+    <rect x="450" y="250" width="300" height="40" fill="#9b59b6" stroke="#8e44ad" stroke-width="2" rx="5"/>
+    <text x="600" y="275" text-anchor="middle" font-size="12" fill="white">
+      Docker Bridge (br-yyyyy)
+    </text>
+    
+    <!-- VXLAN Interface -->
+    <rect x="450" y="300" width="300" height="40" fill="#e67e22" stroke="#d35400" stroke-width="2" rx="5"/>
+    <text x="600" y="325" text-anchor="middle" font-size="12" fill="white">
+      VXLAN Interface (vxlan0) - VNI 100
+    </text>
+    
+    <!-- Physical Interface -->
+    <rect x="450" y="350" width="300" height="40" fill="#34495e" stroke="#2c3e50" stroke-width="2" rx="5"/>
+    <text x="600" y="375" text-anchor="middle" font-size="12" fill="white">
+      Physical Interface (eth0) - 10.0.1.6
+    </text>
+    
+    <!-- Sample Containers -->
+    <rect x="470" y="420" width="80" height="60" fill="#1abc9c" stroke="#16a085" stroke-width="1" rx="3"/>
+    <text x="510" y="440" text-anchor="middle" font-size="10" fill="white">nginx2</text>
+    <text x="510" y="455" text-anchor="middle" font-size="9" fill="white">172.20.0.13</text>
+    <text x="510" y="470" text-anchor="middle" font-size="8" fill="white">Port 80</text>
+    
+    <rect x="560" y="420" width="80" height="60" fill="#1abc9c" stroke="#16a085" stroke-width="1" rx="3"/>
+    <text x="600" y="440" text-anchor="middle" font-size="10" fill="white">db1</text>
+    <text x="600" y="455" text-anchor="middle" font-size="9" fill="white">172.20.0.14</text>
+    <text x="600" y="470" text-anchor="middle" font-size="8" fill="white">Port 5432</text>
+    
+    <rect x="650" y="420" width="80" height="60" fill="#1abc9c" stroke="#16a085" stroke-width="1" rx="3"/>
+    <text x="690" y="440" text-anchor="middle" font-size="10" fill="white">api1</text>
+    <text x="690" y="455" text-anchor="middle" font-size="9" fill="white">172.20.0.15</text>
+    <text x="690" y="470" text-anchor="middle" font-size="8" fill="white">Port 8080</text>
+  </g>
+  
+  <!-- Host 3 (IPAM) Stack -->
+  <g id="host3-stack">
+    <text x="1000" y="80" text-anchor="middle" font-size="16" font-weight="bold" fill="#16a085">
+      Host 3 (10.0.1.100) IPAM Stack
+    </text>
+    
+    <!-- IPAM Service -->
+    <rect x="850" y="100" width="300" height="40" fill="#e67e22" stroke="#d35400" stroke-width="2" rx="5"/>
+    <text x="1000" y="125" text-anchor="middle" font-size="12" fill="white">
+      IPAM Service (FastAPI:8000)
+    </text>
+    
+    <!-- Redis -->
+    <rect x="850" y="150" width="300" height="40" fill="#c0392b" stroke="#a93226" stroke-width="2" rx="5"/>
+    <text x="1000" y="175" text-anchor="middle" font-size="12" fill="white">
+      Redis Database (Port 6379)
+    </text>
+    
+    <!-- Redis Data -->
+    <rect x="850" y="200" width="300" height="100" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" rx="5"/>
+    <text x="1000" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#2c3e50">
+      Redis Data Store
+    </text>
+    <text x="860" y="240" font-size="9" fill="#2c3e50">• available_ips: {172.20.0.16, 172.20.0.17, ...}</text>
+    <text x="860" y="255" font-size="9" fill="#2c3e50">• allocated_ips: {172.20.0.10, 172.20.0.11, ...}</text>
+    <text x="860" y="270" font-size="9" fill="#2c3e50">• container_ips: nginx1→172.20.0.10</text>
+    <text x="860" y="285" font-size="9" fill="#2c3e50">• container_hosts: nginx1→10.0.1.142</text>
+    
+    <!-- Network Interface -->
+    <rect x="850" y="320" width="300" height="40" fill="#34495e" stroke="#2c3e50" stroke-width="2" rx="5"/>
+    <text x="1000" y="345" text-anchor="middle" font-size="12" fill="white">
+      Network Interface (eth0) - 10.0.1.100
+    </text>
+  </g>
+  
+  <!-- VXLAN Tunnel -->
+  <path d="M 350 325 Q 400 280 450 325" stroke="#9b59b6" stroke-width="6" fill="none" stroke-dasharray="15,10"/>
+  <text x="400" y="270" text-anchor="middle" font-size="14" font-weight="bold" fill="#8e44ad">
+    VXLAN Tunnel
+  </text>
+  <text x="400" y="290" text-anchor="middle" font-size="11" fill="#8e44ad">
+    UDP Port 4789
+  </text>
+  <text x="400" y="305" text-anchor="middle" font-size="11" fill="#8e44ad">
+    VNI: 100
+  </text>
+  
+  <!-- Management Network -->
+  <rect x="50" y="520" width="1100" height="60" fill="#e8f4fd" stroke="#3498db" stroke-width="2" rx="10"/>
+  <text x="600" y="545" text-anchor="middle" font-size="16" font-weight="bold" fill="#2980b9">
+    Management Network (10.0.1.0/24)
+  </text>
+  <text x="600" y="565" text-anchor="middle" font-size="12" fill="#2980b9">
+    API Communication: Container Services ↔ IPAM Service
+  </text>
+  
+  <!-- Packet Flow -->
+  <g id="packet-flow">
+    <text x="600" y="620" text-anchor="middle" font-size="18" font-weight="bold" fill="#2c3e50">
+      Packet Flow Example: nginx1 (172.20.0.10) → nginx2 (172.20.0.13)
+    </text>
+    
+    <!-- Step boxes -->
+    <rect x="50" y="640" width="200" height="80" fill="#fff" stroke="#3498db" stroke-width="2" rx="5"/>
+    <text x="150" y="660" text-anchor="middle" font-size="11" font-weight="bold" fill="#2c3e50">
+      1. Container nginx1
+    </text>
+    <text x="150" y="675" text-anchor="middle" font-size="10" fill="#2c3e50">
+      Source: 172.20.0.10
+    </text>
+    <text x="150" y="690" text-anchor="middle" font-size="10" fill="#2c3e50">
+      Dest: 172.20.0.13
+    </text>
+    <text x="150" y="705" text-anchor="middle" font-size="10" fill="#2c3e50">
+      Protocol: HTTP/TCP
+    </text>
+    
+    <rect x="300" y="640" width="200" height="80" fill="#fff" stroke="#9b59b6" stroke-width="2" rx="5"/>
+    <text x="400" y="660" text-anchor="middle" font-size="11" font-weight="bold" fill="#2c3e50">
+      2. Docker Bridge
+    </text>
+    <text x="400" y="675" text-anchor="middle" font-size="10" fill="#2c3e50">
+      Route to VXLAN
+    </text>
+    <text x="400" y="690" text-anchor="middle" font-size="10" fill="#2c3e50">
+      Interface: vxlan0
+    </text>
+    <text x="400" y="705" text-anchor="middle" font-size="10" fill="#2c3e50">
+      Encapsulation: VXLAN
+    </text>
+    
+    <rect x="550" y="640" width="200" height="80" fill="#fff" stroke="#e67e22" stroke-width="2" rx="5"/>
+    <text x="650" y="660" text-anchor="middle" font-size="11" font-weight="bold" fill="#2c3e50">
+      3. VXLAN Encap
+    </text>
+    <text x="650" y="675" text-anchor="middle" font-size="10" fill="#2c3e50">
+      Outer IP: 10.0.1.142→10.0.1.6
+    </text>
+    <text x="650" y="690" text-anchor="middle" font-size="10" fill="#2c3e50">
+      UDP Port: 4789
+    </text>
+    <text x="650" y="705" text-anchor="middle" font-size="10" fill="#2c3e50">
+      VNI: 100
+    </text>
+    
+    <rect x="800" y="640" width="200" height="80" fill="#fff" stroke="#27ae60" stroke-width="2" rx="5"/>
+    <text x="900" y="660" text-anchor="middle" font-size="11" font-weight="bold" fill="#2c3e50">
+      4. Host 2 Decap
+    </text>
+    <text x="900" y="675" text-anchor="middle" font-size="10" fill="#2c3e50">
+      Extract inner packet
+    </text>
+    <text x="900" y="690" text-anchor="middle" font-size="10" fill="#2c3e50">
+      Forward to nginx2
+    </text>
+    <text x="900" y="705" text-anchor="middle" font-size="10" fill="#2c3e50">
+      Dest: 172.20.0.13
+    </text>
+    
+    <!-- Flow arrows -->
+    <defs>
+      <marker id="flowarrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#e74c3c"/>
+      </marker>
+    </defs>
+    
+    <path d="M 250 680 L 300 680" stroke="#e74c3c" stroke-width="3" fill="none" marker-end="url(#flowarrow)"/>
+    <path d="M 500 680 L 550 680" stroke="#e74c3c" stroke-width="3" fill="none" marker-end="url(#flowarrow)"/>
+    <path d="M 750 680 L 800 680" stroke="#e74c3c" stroke-width="3" fill="none" marker-end="url(#flowarrow)"/>
+  </g>
+  
+  <!-- Command Reference -->
+  <g id="commands">
+    <rect x="50" y="750" width="1100" height="120" fill="#2c3e50" rx="10"/>
+    <text x="600" y="775" text-anchor="middle" font-size="16" font-weight="bold" fill="white">
+      Quick Reference Commands
+    </text>
+    
+    <text x="70" y="800" font-size="12" font-weight="bold" fill="#ecf0f1">Setup Commands:</text>
+    <text x="70" y="815" font-size="10" fill="#bdc3c7">sudo ip link add vxlan0 type vxlan id 100 remote &lt;remote_host&gt; dstport 4789 dev eth0</text>
+    <text x="70" y="830" font-size="10" fill="#bdc3c7">docker network create --driver bridge --subnet=172.20.0.0/16 vxlan-net</text>
+    
+    <text x="70" y="850" font-size="12" font-weight="bold" fill="#ecf0f1">Test Commands:</text>
+    <text x="70" y="865" font-size="10" fill="#bdc3c7">curl -X POST "http://10.0.1.142:8001/create_container?container_name=test1"</text>
+    
+    <text x="600" y="800" font-size="12" font-weight="bold" fill="#ecf0f1">Debug Commands:</text>
+    <text x="600" y="815" font-size="10" fill="#bdc3c7">ip link show vxlan0</text>
+    <text x="600" y="830" font-size="10" fill="#bdc3c7">bridge fdb show dev vxlan0</text>
+    <text x="600" y="845" font-size="10" fill="#bdc3c7">docker exec test1 ping 172.20.0.13</text>
+    <text x="600" y="860" font-size="10" fill="#bdc3c7">docker network inspect vxlan-net</text>
+  </g>
+</svg>
