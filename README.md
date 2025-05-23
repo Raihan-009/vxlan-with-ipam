@@ -262,20 +262,6 @@ tcpdump -i eth0 port 4789 -n
 
 ---
 
-## Production Considerations
-
-### Security
-- Enable TLS for API communications
-- Implement authentication for service endpoints
-- Restrict Redis access to localhost only
-- Configure firewall rules for VXLAN traffic
-
-### High Availability  
-- Deploy Redis in cluster mode
-- Implement IPAM service redundancy
-- Monitor service health with external tools
-- Setup automated failover mechanisms
-
 ### Scalability
 - Consider IP pool exhaustion at scale
 - Implement container garbage collection
