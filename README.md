@@ -1,271 +1,283 @@
-# VXLAN Container Cluster - System Architecture
+# VXLAN Container Cluster
+**Multi-Host Docker Container Orchestration with Centralized IP Management**
 
 ## Overview
 
-This document describes the architecture of a VXLAN-based container clustering solution that provides Docker Swarm-like functionality with centralized IP address management (IPAM) and cross-host container networking.
+This project implements a distributed container orchestration system using VXLAN (Virtual Extensible LAN) technology to enable seamless communication between Docker containers across multiple physical hosts. The architecture features centralized IP address management (IPAM) with Redis backend for persistent state management.
 
-## High-Level Architecture
+### Key Features
+- **Cross-host container communication** via VXLAN overlay network
+- **Centralized IP allocation** with collision prevention
+- **Persistent container registry** using Redis
+- **RESTful API** for container lifecycle management
+- **Network isolation** with overlay tunneling
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           VXLAN Container Cluster                           │
-└─────────────────────────────────────────────────────────────────────────────┘
+---
 
-┌──────────────────────────┐         ┌──────────────────────────┐
-│        HOST-1            │◄────────┤        HOST-2            │
-│     (10.0.1.142)         │  VXLAN  │     (10.0.1.6)           │
-│                          │  Tunnel │                          │
-│  ┌─────────────────────┐ │         │                          │
-│  │   IPAM Service      │ │         │                          │
-│  │   (Redis + API)     │ │         │                          │
-│  │   Port: 8000        │ │         │                          │
-│  └─────────────────────┘ │         │                          │
-│                          │         │                          │
-│  ┌─────────────────────┐ │         │  ┌─────────────────────┐ │
-│  │ Container Service   │ │         │  │ Container Service   │ │
-│  │   (FastAPI)         │ │         │  │   (FastAPI)         │ │
-│  │   Port: 8001        │ │         │  │   Port: 8001        │ │
-│  └─────────────────────┘ │         │  └─────────────────────┘ │
-│                          │         │                          │
-│  ┌─────────────────────┐ │         │  ┌─────────────────────┐ │
-│  │   Docker Engine     │ │         │  │   Docker Engine     │ │
-│  │   Network: vxlan-net│ │         │  │   Network: vxlan-net│ │
-│  │   Bridge: br-xxxxx  │ │         │  │   Bridge: br-xxxxx  │ │
-│  └─────────────────────┘ │         │  └─────────────────────┘ │
-│                          │         │                          │
-│  ┌─────┐ ┌─────┐ ┌─────┐ │         │  ┌─────┐ ┌─────┐ ┌─────┐ │
-│  │ C1  │ │ C2  │ │ C3  │ │         │  │ C4  │ │ C5  │ │ C6  │ │
-│  └─────┘ └─────┘ └─────┘ │         │  └─────┘ └─────┘ └─────┘ │
-└──────────────────────────┘         └──────────────────────────┘
-```
+## Architecture Overview
 
-## Component Architecture
+![cluster view](https://raw.githubusercontent.com/Raihan-009/vxlan-with-ipam/2314a85293e77e23eeef667a4fbc637238a2f9c4/Assets/vxlan-cluster.svg)
 
-### 1. Network Layer
+The system consists of three main components:
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                      Network Architecture                       │
-└─────────────────────────────────────────────────────────────────┘
+### 1. **IPAM Service (Host 3)** - Centralized Control Plane
+- **Purpose**: Manages IP address pool and container registry
+- **Technology**: FastAPI + Redis
+- **Network**: Management network (10.0.1.0/24)
+- **Responsibilities**:
+  - IP address allocation/deallocation
+  - Container metadata storage
+  - Cross-host service discovery
 
-Physical Network: 10.0.1.0/24
-├── Host-1: 10.0.1.142
-└── Host-2: 10.0.1.6
+### 2. **Container Hosts (Host 1 & 2)** - Compute Nodes  
+- **Purpose**: Run containers and manage local Docker networks
+- **Technology**: Docker Engine + VXLAN networking
+- **Networks**: 
+  - Management: 10.0.1.0/24 (host communication)
+  - Overlay: 172.20.0.0/16 (container communication)
 
-VXLAN Overlay Network: 172.20.0.0/16
-├── Gateway: 172.20.0.1
-├── VXLAN ID: 100
-├── UDP Port: 4789
-└── Container IP Range: 172.20.0.10 - 172.20.255.254
+### 3. **VXLAN Overlay Network** - Data Plane
+- **VNI**: 100 (Virtual Network Identifier)
+- **Transport**: UDP port 4789
+- **Subnet**: 172.20.0.0/16 with /24 allocation per host
 
-VXLAN Encapsulation:
-┌─────────────────┐
-│ Outer Ethernet  │ ← Physical host MACs
-├─────────────────┤
-│ Outer IP        │ ← Host IPs (10.0.1.142/40)
-├─────────────────┤
-│ Outer UDP       │ ← Port 4789
-├─────────────────┤
-│ VXLAN Header    │ ← VNI: 100
-├─────────────────┤
-│ Inner Ethernet  │ ← Container MACs
-├─────────────────┤
-│ Inner IP        │ ← Container IPs (172.20.0.x)
-├─────────────────┤
-│ Application     │ ← HTTP, SSH, etc.
-└─────────────────┘
-```
+---
 
-### 2. Service Architecture
+## Network Flow & Communication
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                      Service Architecture                       │
-└─────────────────────────────────────────────────────────────────┘
+![container lifecycle](https://raw.githubusercontent.com/Raihan-009/vxlan-with-ipam/2314a85293e77e23eeef667a4fbc637238a2f9c4/Assets/container-creation.svg)
 
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Client/User   │    │   Swagger UI    │    │  External APIs  │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
-         └───────────────────────┼───────────────────────┘
-                                 │
-         ┌───────────────────────┼───────────────────────┐
-         │                       │                       │
-         ▼                       ▼                       ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   IPAM Service  │    │Container Service│    │Container Service│
-│   (Host-1 Only) │    │    (Host-1)     │    │    (Host-2)     │
-│   Port: 8000    │    │   Port: 8001    │    │   Port: 8001    │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
-         ▼                       ▼                       ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│  Redis Database │    │  Docker Engine  │    │  Docker Engine  │
-│   (Host-1)      │    │    (Host-1)     │    │    (Host-2)     │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
+### Container Creation Workflow
 
-### 3. Data Flow Architecture
+The container creation process follows a systematic approach:
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                       Data Flow Architecture                    │
-└─────────────────────────────────────────────────────────────────┘
+1. **API Request**: Client sends container creation request to host
+2. **Name Validation**: System checks container name availability via IPAM
+3. **IP Allocation**: IPAM service assigns available IP from pool
+4. **Container Deployment**: Docker creates container with assigned IP
+5. **Network Attachment**: Container connects to VXLAN overlay network
 
-Container Creation Flow:
-┌─────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────┐
-│  User   │───▶│ Container   │───▶│ IPAM        │───▶│ Redis   │
-│ Request │    │ Service     │    │ Service     │    │Database │
-└─────────┘    └─────────────┘    └─────────────┘    └─────────┘
-     │               │                   │               │
-     │         ┌─────▼─────┐       ┌─────▼─────┐         │
-     │         │1. Validate│       │2. Check   │         │
-     │         │   Name    │       │   Global  │         │
-     │         │   Unique  │       │   Names   │         │
-     │         └───────────┘       └───────────┘         │ 
-     │               │                   │               │
-     │         ┌─────▼─────┐       ┌─────▼─────┐    ┌────▼────┐
-     │         │3. Request │       │4. Allocate│    │5. Store │
-     │         │    IP     │       │    IP     │    │   Data  │
-     │         └───────────┘       └───────────┘    └─────────┘
-     │               │                   │               │
-     │         ┌─────▼─────┐             |               │
-     └────────▶│6. Create  │◄──────────────────────────-─┘
-               │ Container │
-               │ with IP   │
-               └───────────┘
+### Redis Operations During IP Allocation
 
-Container Communication Flow:
-┌─────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────┐
-│Container│───▶│   Docker    │───▶│    VXLAN    │───▶│Container│
-│ Host-1  │    │   Bridge    │    │   Tunnel    │    │ Host-2  │
-│172.20.10│    │ br-xxxxxx   │    │ vxlan0      │    │172.20.11│
-└─────────┘    └─────────────┘    └─────────────┘    └─────────┘
+The IPAM service uses Redis data structures for efficient IP management:
+
+- **`available_ips` (Set)**: Pool of unallocated IP addresses
+- **`allocated_ips` (Set)**: Currently assigned IP addresses  
+- **`container_ips` (Hash)**: Container name → IP mapping
+- **`container_hosts` (Hash)**: Container → Host mapping
+
+---
+
+## Technical Deep Dive
+
+![protocol details](https://raw.githubusercontent.com/Raihan-009/vxlan-with-ipam/2314a85293e77e23eeef667a4fbc637238a2f9c4/Assets/vxlan-stack.svg)
+
+### VXLAN Encapsulation Process
+
+When containers communicate across hosts, packets undergo VXLAN encapsulation:
+
+1. **Container Layer**: Application generates packet (e.g., nginx1 → nginx2)
+2. **Docker Bridge**: Routes packet to VXLAN interface based on destination
+3. **VXLAN Encapsulation**: Wraps inner packet with VXLAN header (VNI: 100)
+4. **UDP Transport**: Encapsulates VXLAN packet in UDP (port 4789)
+5. **Physical Network**: Transmits over management network to destination host
+6. **Decapsulation**: Destination host extracts inner packet and forwards to target container
+
+### Network Stack Layers
+
+Each host maintains a complete network stack:
+
+- **Physical Interface** (eth0): Management network connectivity
+- **VXLAN Interface** (vxlan0): Overlay network endpoint
+- **Docker Bridge** (br-xxxxx): Container network bridge
+- **Container Network**: Isolated container networking
+
+---
+
+## Prerequisites
+
+- **Operating System**: Linux with kernel 3.7+ (VXLAN support)
+- **Docker**: Version 20.10+ with bridge networking
+- **Network Connectivity**: All hosts reachable on management network
+- **System Access**: Root/sudo privileges for network configuration
+- **Firewall**: UDP port 4789 open between hosts
+
+---
+
+## Quick Start Guide
+
+### Step 1: Deploy IPAM Service (Host 3)
+```bash
+# Clone repository and setup IPAM
+cd /opt && git clone <repository>
+cd vxlan-cluster/ipam
+docker-compose up -d --build
+
+# Verify IPAM service
+curl http://localhost:8000/stats
 ```
 
-## Technology Stack
+### Step 2: Setup Container Host 1
+```bash
+# Setup application files
+cd /opt/vxlan-cluster/host1
+docker-compose up -d --build
 
-### Core Technologies
-- **VXLAN**: Virtual Extensible LAN for overlay networking
-- **Docker**: Container runtime and networking
-- **FastAPI**: REST API framework with automatic OpenAPI documentation
-- **Redis**: In-memory database for IP address management
-- **Python**: Primary programming language for services
-- **Uvicorn**: ASGI server for FastAPI applications
+# Configure VXLAN network
+sudo ./setup_vxlan_host1.sh
 
-### Network Components
-- **Linux Bridge**: Docker bridge networking
-- **iptables**: Network packet filtering and NAT
-- **UDP**: Transport protocol for VXLAN encapsulation
-- **Ethernet**: Layer 2 networking within containers
-
-### Infrastructure
-- **systemd**: Service management and auto-start
-- **journalctl**: Centralized logging
-- **cron**: Scheduled health checks and maintenance
-
-## Security Model
-
-### Network Security
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                      Security Architecture                      │
-└─────────────────────────────────────────────────────────────────┘
-
-Network Isolation:
-┌─────────────────┐    ┌─────────────────┐
-│  Physical Net   │    │  Container Net  │
-│  10.0.1.0/24    │    │ 172.20.0.0/16   │
-└─────────────────┘    └─────────────────┘
-         │                       │
-         └───── VXLAN Tunnel ────┘
-              (Encrypted Optional)
-
-Access Control:
-- IPAM Service: Only accessible from cluster hosts
-- Container Services: Host-specific access
-- Redis: Local access only on Host-1
-- Containers: Isolated by network namespace
+# Verify container service
+curl http://localhost:8001/health
 ```
 
-### Service Security
-- **API Authentication**: Can be extended with JWT/OAuth
-- **Network Isolation**: Services only accessible within cluster
-- **Container Isolation**: Docker security features
-- **Resource Limits**: Configurable container resource constraints
+### Step 3: Setup Container Host 2
+```bash
+# Setup application files  
+cd /opt/vxlan-cluster/host2
+docker-compose up -d --build
 
-## Scalability Considerations
+# Configure VXLAN network
+sudo ./setup_vxlan_host2.sh
 
-### Horizontal Scaling
-```
-Current: 2-Host Cluster
-┌────────┐    ┌────────┐
-│ Host-1 │────│ Host-2 │
-└────────┘    └────────┘
-
-Extended: N-Host Cluster
-┌────────┐    ┌────────┐    ┌────────┐    ┌────────┐
-│ Host-1 │────│ Host-2 │────│ Host-3 │────│ Host-N │
-└────────┘    └────────┘    └────────┘    └────────┘
-     │           │           │           │
-     └───────────┼───────────┼───────────┘
-                 │           │
-                IPAM Service (HA)
+# Verify container service
+curl http://localhost:8001/health
 ```
 
-### Scaling Limits
-- **VXLAN Limit**: 16M virtual networks (24-bit VNI)
-- **Container IPs**: 65,534 containers per network (172.20.0.0/16)
-- **Redis Performance**: 100K+ operations/second
-- **Host Limits**: Limited by VXLAN multicast/unicast capabilities
+---
 
-## High Availability Options
+## Testing & Validation
 
-### IPAM Service HA
-```
-Primary Setup:
-┌────────────────┐
-│    Host-1      │
-│ ┌────────────┐ │
-│ │IPAM + Redis│ │
-│ └────────────┘ │
-└────────────────┘
+### Create Test Containers
+```bash
+# Deploy nginx container on Host 1
+curl -X POST "http://10.0.1.142:8001/create_container?container_name=test1&image=nginx:alpine"
 
-HA Setup (Future):
-┌────────────────┐    ┌────────────────┐
-│    Host-1      │    │    Host-3      │
-│ ┌────────────┐ │    │ ┌────────────┐ │
-│ │IPAM Primary│ │    │ │IPAM Standby│ │
-│ │Redis Master│ │    │ │Redis Slave │ │
-│ └────────────┘ │    │ └────────────┘ │
-└────────────────┘    └────────────────┘
+# Deploy nginx container on Host 2
+curl -X POST "http://10.0.1.6:8001/create_container?container_name=test2&image=nginx:alpine"
 ```
 
-## Performance Characteristics
+### Verify Cross-Host Communication
+```bash
+# Check container IP assignments
+curl http://10.0.1.100:8000/containers
 
-### Network Performance
-- **Latency**: +0.1ms overhead from VXLAN encapsulation
-- **Bandwidth**: ~95% of physical network bandwidth
-- **Packet Size**: +50 bytes overhead from VXLAN headers
+# Test network connectivity
+docker exec test1 ping -c 3 <test2_ip>
+docker exec test2 ping -c 3 <test1_ip>
 
-### Service Performance
-- **Container Creation**: 2-5 seconds per container
-- **IP Allocation**: <100ms per request
-- **API Response**: <50ms for most operations
-- **Database Operations**: <10ms for Redis operations
+# Test HTTP communication
+docker exec test1 curl http://<test2_ip>:80
+```
 
-## Monitoring and Observability
+### Expected Outcomes
 
-### Built-in Monitoring
-- Health check endpoints for all services
-- Container and IP allocation statistics
-- Network interface status monitoring
-- Automated log rotation and retention
+- ✅ **IP Allocation**: Each container receives unique IP from centralized pool
+- ✅ **Cross-Host Ping**: Containers can ping across physical host boundaries  
+- ✅ **Service Discovery**: Containers discoverable via IPAM registry
+- ✅ **Network Isolation**: Container traffic encapsulated in VXLAN tunnel
+- ✅ **Persistent State**: Container mappings survive service restarts
 
-### External Integration Points
-- **Prometheus**: Metrics collection endpoints available
-- **Grafana**: Dashboard integration capability
-- **ELK Stack**: Structured logging output
-- **Alerting**: Service status and threshold monitoring
+---
 
-This architecture provides a robust, scalable foundation for multi-host container networking with centralized management and monitoring capabilities.
+## API Reference
+
+### IPAM Service Endpoints
+```http
+GET  /stats              # System statistics
+GET  /containers         # List all containers  
+POST /allocate           # Request IP allocation
+POST /deallocate         # Release IP address
+GET  /check/{name}       # Check name availability
+```
+
+### Container Service Endpoints  
+```http
+GET  /health                    # Service health check
+POST /create_container          # Deploy new container
+GET  /containers               # List local containers
+DELETE /container/{name}       # Remove container
+```
+
+---
+
+## Troubleshooting Guide
+
+### Network Connectivity Issues
+```bash
+# Check VXLAN interface status
+ip link show vxlan0
+bridge fdb show dev vxlan0
+
+# Verify Docker network
+docker network inspect vxlan-net
+
+# Test container networking
+docker exec <container> ip route
+docker exec <container> ping <gateway>
+```
+
+### IPAM Service Issues
+```bash
+# Monitor Redis operations
+docker exec -it vxlan-redis redis-cli MONITOR
+
+# Check available IP pool
+docker exec -it vxlan-redis redis-cli SCARD available_ips
+
+# Verify container mappings
+docker exec -it vxlan-redis redis-cli HGETALL container_ips
+```
+
+### Performance Monitoring
+```bash
+# Network traffic analysis
+tcpdump -i vxlan0 -n
+
+# Container resource usage
+docker stats
+
+# VXLAN packet inspection
+tcpdump -i eth0 port 4789 -n
+```
+
+---
+
+## Configuration Parameters
+
+### Network Configuration
+- **Management Network**: `10.0.1.0/24`
+- **Container Network**: `172.20.0.0/16`  
+- **VXLAN VNI**: `100`
+- **UDP Port**: `4789`
+
+### Service Ports
+- **IPAM Service**: `8000`
+- **Container Service**: `8001`  
+- **Redis**: `6379` (internal)
+
+### IP Pool Management
+- **Total IPs**: 65,534 addresses
+- **Available Pool**: Dynamically managed via Redis
+- **Allocation Strategy**: First-available from set
+
+---
+
+## Production Considerations
+
+### Security
+- Enable TLS for API communications
+- Implement authentication for service endpoints
+- Restrict Redis access to localhost only
+- Configure firewall rules for VXLAN traffic
+
+### High Availability  
+- Deploy Redis in cluster mode
+- Implement IPAM service redundancy
+- Monitor service health with external tools
+- Setup automated failover mechanisms
+
+### Scalability
+- Consider IP pool exhaustion at scale
+- Implement container garbage collection
+- Monitor network bandwidth utilization
+- Plan for multi-datacenter deployments
