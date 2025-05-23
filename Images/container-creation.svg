@@ -1,0 +1,208 @@
+<svg viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1000" height="700" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="500" y="30" text-anchor="middle" font-size="22" font-weight="bold" fill="#2c3e50">
+    Container Creation &amp; Communication Flow
+  </text>
+  
+  <!-- Step 1: Container Creation Request -->
+  <g id="step1">
+    <rect x="50" y="70" width="200" height="80" fill="#e74c3c" stroke="#c0392b" stroke-width="2" rx="10"/>
+    <text x="150" y="95" text-anchor="middle" font-size="12" font-weight="bold" fill="white">
+      Step 1: Create Container
+    </text>
+    <text x="150" y="115" text-anchor="middle" font-size="10" fill="white">
+      curl -X POST
+    </text>
+    <text x="150" y="130" text-anchor="middle" font-size="10" fill="white">
+      host:8001/create_container
+    </text>
+    <text x="150" y="145" text-anchor="middle" font-size="10" fill="white">
+      name=nginx1
+    </text>
+  </g>
+  
+  <!-- Step 2: Check Container Name -->
+  <g id="step2">
+    <rect x="300" y="70" width="200" height="80" fill="#f39c12" stroke="#e67e22" stroke-width="2" rx="10"/>
+    <text x="400" y="95" text-anchor="middle" font-size="12" font-weight="bold" fill="white">
+      Step 2: Check Name
+    </text>
+    <text x="400" y="115" text-anchor="middle" font-size="10" fill="white">
+      GET /check/nginx1
+    </text>
+    <text x="400" y="130" text-anchor="middle" font-size="10" fill="white">
+      to IPAM Service
+    </text>
+    <text x="400" y="145" text-anchor="middle" font-size="10" fill="white">
+      (10.0.1.100:8000)
+    </text>
+  </g>
+  
+  <!-- Step 3: IP Allocation -->
+  <g id="step3">
+    <rect x="550" y="70" width="200" height="80" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="10"/>
+    <text x="650" y="95" text-anchor="middle" font-size="12" font-weight="bold" fill="white">
+      Step 3: Allocate IP
+    </text>
+    <text x="650" y="115" text-anchor="middle" font-size="10" fill="white">
+      POST /allocate
+    </text>
+    <text x="650" y="130" text-anchor="middle" font-size="10" fill="white">
+      Redis: SPOP available_ips
+    </text>
+    <text x="650" y="145" text-anchor="middle" font-size="10" fill="white">
+      Returns: 172.20.0.10
+    </text>
+  </g>
+  
+  <!-- Step 4: Container Creation -->
+  <g id="step4">
+    <rect x="800" y="70" width="150" height="80" fill="#27ae60" stroke="#229954" stroke-width="2" rx="10"/>
+    <text x="875" y="95" text-anchor="middle" font-size="12" font-weight="bold" fill="white">
+      Step 4: Create
+    </text>
+    <text x="875" y="115" text-anchor="middle" font-size="10" fill="white">
+      Docker run
+    </text>
+    <text x="875" y="130" text-anchor="middle" font-size="10" fill="white">
+      Connect to
+    </text>
+    <text x="875" y="145" text-anchor="middle" font-size="10" fill="white">
+      VXLAN network
+    </text>
+  </g>
+  
+  <!-- Arrows for steps -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#34495e"/>
+    </marker>
+    <marker id="greenarrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#27ae60"/>
+    </marker>
+    <marker id="bluearrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#3498db"/>
+    </marker>
+  </defs>
+  
+  <path d="M 250 110 L 300 110" stroke="#34495e" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 500 110 L 550 110" stroke="#34495e" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 750 110 L 800 110" stroke="#34495e" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  
+  <!-- Redis Operations -->
+  <g id="redis-ops">
+    <rect x="200" y="200" width="600" height="120" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2" rx="10"/>
+    <text x="500" y="225" text-anchor="middle" font-size="16" font-weight="bold" fill="#2c3e50">
+      Redis Operations During IP Allocation
+    </text>
+    
+    <rect x="220" y="240" width="140" height="40" fill="#c0392b" rx="5"/>
+    <text x="290" y="265" text-anchor="middle" font-size="11" fill="white">SPOP available_ips</text>
+    
+    <rect x="380" y="240" width="140" height="40" fill="#c0392b" rx="5"/>
+    <text x="450" y="265" text-anchor="middle" font-size="11" fill="white">HSET container_ips</text>
+    
+    <rect x="540" y="240" width="140" height="40" fill="#c0392b" rx="5"/>
+    <text x="610" y="265" text-anchor="middle" font-size="11" fill="white">SADD allocated_ips</text>
+    
+    <rect x="220" y="290" width="140" height="20" fill="#95a5a6" rx="3"/>
+    <text x="290" y="305" text-anchor="middle" font-size="9" fill="white">Get: 172.20.0.10</text>
+    
+    <rect x="380" y="290" width="140" height="20" fill="#95a5a6" rx="3"/>
+    <text x="450" y="305" text-anchor="middle" font-size="9" fill="white">nginx1 → 172.20.0.10</text>
+    
+    <rect x="540" y="290" width="140" height="20" fill="#95a5a6" rx="3"/>
+    <text x="610" y="305" text-anchor="middle" font-size="9" fill="white">Add to allocated set</text>
+  </g>
+  
+  <!-- Container Communication -->
+  <g id="communication">
+    <text x="500" y="360" text-anchor="middle" font-size="16" font-weight="bold" fill="#2c3e50">
+      Container Communication via VXLAN
+    </text>
+    
+    <!-- Host 1 Container -->
+    <rect x="100" y="380" width="120" height="80" fill="#f39c12" stroke="#e67e22" stroke-width="2" rx="5"/>
+    <text x="160" y="405" text-anchor="middle" font-size="12" font-weight="bold" fill="white">
+      Container A
+    </text>
+    <text x="160" y="420" text-anchor="middle" font-size="10" fill="white">
+      Host 1
+    </text>
+    <text x="160" y="435" text-anchor="middle" font-size="10" fill="white">
+      IP: 172.20.0.10
+    </text>
+    <text x="160" y="450" text-anchor="middle" font-size="10" fill="white">
+      nginx:alpine
+    </text>
+    
+    <!-- VXLAN Tunnel -->
+    <rect x="300" y="400" width="200" height="40" fill="#9b59b6" stroke="#8e44ad" stroke-width="2" rx="5"/>
+    <text x="400" y="425" text-anchor="middle" font-size="12" font-weight="bold" fill="white">
+      VXLAN Tunnel (ID: 100)
+    </text>
+    
+    <!-- Host 2 Container -->
+    <rect x="580" y="380" width="120" height="80" fill="#f39c12" stroke="#e67e22" stroke-width="2" rx="5"/>
+    <text x="640" y="405" text-anchor="middle" font-size="12" font-weight="bold" fill="white">
+      Container B
+    </text>
+    <text x="640" y="420" text-anchor="middle" font-size="10" fill="white">
+      Host 2
+    </text>
+    <text x="640" y="435" text-anchor="middle" font-size="10" fill="white">
+      IP: 172.20.0.11
+    </text>
+    <text x="640" y="450" text-anchor="middle" font-size="10" fill="white">
+      nginx:alpine
+    </text>
+    
+    <!-- Communication arrows -->
+    <path d="M 220 420 L 300 420" stroke="#27ae60" stroke-width="4" fill="none" marker-end="url(#greenarrow)"/>
+    <path d="M 500 420 L 580 420" stroke="#27ae60" stroke-width="4" fill="none" marker-end="url(#greenarrow)"/>
+    
+    <text x="400" y="410" text-anchor="middle" font-size="10" fill="white">
+      ping 172.20.0.11
+    </text>
+  </g>
+  
+  <!-- Network Details -->
+  <g id="network-details">
+    <rect x="50" y="500" width="900" height="150" fill="#fff" stroke="#34495e" stroke-width="2" rx="10"/>
+    <text x="500" y="525" text-anchor="middle" font-size="16" font-weight="bold" fill="#2c3e50">
+      Network Configuration Details
+    </text>
+    
+    <!-- Left column -->
+    <text x="70" y="550" font-size="12" font-weight="bold" fill="#2c3e50">Docker Networks:</text>
+    <text x="70" y="570" font-size="11" fill="#2c3e50">• Host 1: docker network create vxlan-net</text>
+    <text x="70" y="585" font-size="11" fill="#2c3e50">• Host 2: docker network create vxlan-net</text>
+    <text x="70" y="600" font-size="11" fill="#2c3e50">• Subnet: 172.20.0.0/16</text>
+    <text x="70" y="615" font-size="11" fill="#2c3e50">• Gateway: 172.20.0.1</text>
+    
+    <!-- Middle column -->
+    <text x="350" y="550" font-size="12" font-weight="bold" fill="#2c3e50">VXLAN Configuration:</text>
+    <text x="350" y="570" font-size="11" fill="#2c3e50">• Interface: vxlan0</text>
+    <text x="350" y="585" font-size="11" fill="#2c3e50">• VNI: 100</text>
+    <text x="350" y="600" font-size="11" fill="#2c3e50">• Port: 4789 (UDP)</text>
+    <text x="350" y="615" font-size="11" fill="#2c3e50">• Tunnel: Host1 ↔ Host2</text>
+    
+    <!-- Right column -->
+    <text x="650" y="550" font-size="12" font-weight="bold" fill="#2c3e50">API Endpoints:</text>
+    <text x="650" y="570" font-size="11" fill="#2c3e50">• IPAM: 10.0.1.100:8000</text>
+    <text x="650" y="585" font-size="11" fill="#2c3e50">• Host 1: 10.0.1.142:8001</text>
+    <text x="650" y="600" font-size="11" fill="#2c3e50">• Host 2: 10.0.1.6:8001</text>
+    <text x="650" y="615" font-size="11" fill="#2c3e50">• Redis: Internal (6379)</text>
+  </g>
+  
+  <!-- Command Examples -->
+  <g id="commands">
+    <rect x="50" y="670" width="900" height="25" fill="#2c3e50" rx="5"/>
+    <text x="70" y="688" font-size="11" fill="white">Test Commands:</text>
+    <text x="200" y="688" font-size="10" fill="#ecf0f1">curl -X POST "http://10.0.1.142:8001/create_container?container_name=test1"</text>
+    <text x="700" y="688" font-size="10" fill="#ecf0f1">docker exec test1 ping 172.20.0.11</text>
+  </g>
+</svg>

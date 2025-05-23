@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: vxlan-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - ipam-net
+    restart: unless-stopped
+
+  ipam-service:
+    build: .
+    container_name: vxlan-ipam
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    networks:
+      - ipam-net
+    restart: unless-stopped
+
+networks:
+  ipam-net:
+    driver: bridge
+
+volumes:
+  redis_data:

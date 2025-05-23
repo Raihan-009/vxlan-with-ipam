@@ -1,6 +1,3 @@
-# ipam_service.py : Only for Host 1
-# /opt/vxlan-cluster/ipam_service.py
-
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import redis
@@ -74,7 +71,7 @@ async def startup_event():
 @app.get("/", tags=["Health"])
 async def health_check():
     """Health check endpoint"""
-    return {"status": "healthy", "service": "IPAM"}
+    return {"status": "healthy", "service": "IPAM", "host": IPAM_NODE_IP}
 
 @app.post("/allocate", response_model=IPAllocationResponse, tags=["IP Management"])
 async def allocate_ip(request: IPAllocationRequest):
