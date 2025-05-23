@@ -18,7 +18,7 @@ mkdir -p /opt/vxlan-cluster
 cd /opt/vxlan-cluster
 ```
 
-### 2. Create all files (From Host1 Folder)
+### 2. Create all files (From Host2 Folder)
 
 ### 3. Wait for IPAM service to be ready
 ```bash

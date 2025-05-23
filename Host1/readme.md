@@ -22,7 +22,7 @@ cd /opt/vxlan-cluster
 
 ### 3. Wait for IPAM service to be ready
 ```bash
-while ! curl -s http://10.0.1.100:8000/ > /dev/null; do
+while ! curl -s http://10.0.1.4:8000/ > /dev/null; do
     echo "Waiting for IPAM service..."
     sleep 2
 done
